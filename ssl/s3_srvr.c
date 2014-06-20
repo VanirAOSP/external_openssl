@@ -671,6 +671,7 @@ int ssl3_accept(SSL *s)
 
 			s->s3->flags |= SSL3_FLAGS_CCS_OK;
 			/* we should decide if we expected this one */
+			s->s3->flags |= SSL3_FLAGS_CCS_OK;
 			ret=ssl3_get_cert_verify(s);
 			if (ret <= 0) goto end;
 
@@ -688,6 +689,7 @@ int ssl3_accept(SSL *s)
 			channel_id = s->s3->tlsext_channel_id_valid;
 #endif
 
+			s->s3->flags |= SSL3_FLAGS_CCS_OK;
 			if (next_proto_neg)
 				s->state=SSL3_ST_SR_NEXT_PROTO_A;
 			else if (channel_id)
