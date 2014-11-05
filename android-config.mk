@@ -43,6 +43,10 @@ endif
 
 LOCAL_CFLAGS += -Wno-missing-field-initializers -Wno-unused-parameter
 
+# OpenSSL isn't ready to be built with strict aliasing, and fixing it without
+# breaking both API and ABI is hard
+LOCAL_CFLAGS += -fno-strict-aliasing
+
 # Debug
 # LOCAL_CFLAGS += -DCIPHER_DEBUG
 

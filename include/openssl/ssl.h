@@ -681,6 +681,11 @@ struct ssl_session_st
  * version; see draft-ietf-tls-downgrade-scsv-00 for details. */
 #define SSL_MODE_SEND_FALLBACK_SCSV 0x00000200L
 
+/* Send TLS_FALLBACK_SCSV in the ClientHello.
+ * To be set by applications that reconnect with a downgraded protocol
+ * version; see draft-ietf-tls-downgrade-scsv-00 for details. */
+#define SSL_MODE_SEND_FALLBACK_SCSV 0x00000200L
+
 /* Note: SSL[_CTX]_set_{options,mode} use |= op on the previous value,
  * they cannot be used to clear bits. */
 
@@ -2742,6 +2747,7 @@ void ERR_load_SSL_strings(void);
 #define SSL_R_WRONG_VERSION_NUMBER			 267
 #define SSL_R_X509_LIB					 268
 #define SSL_R_X509_VERIFICATION_SETUP_PROBLEMS		 269
+#define SSL_R_UNEXPECTED_CCS				 388
 
 #ifdef  __cplusplus
 }
