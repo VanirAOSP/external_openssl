@@ -448,11 +448,20 @@ int ssl3_accept(SSL *s)
 			alg_k = s->s3->tmp.new_cipher->algorithm_mkey;
 			alg_a = s->s3->tmp.new_cipher->algorithm_auth;
 
-			/*
-			 * clear this, it may get reset by
-			 * send_server_key_exchange
-			 */
-			s->s3->tmp.use_rsa_tmp=0;
+			/* clear this, it may get reset by
+			 * send_server_key_exchange */
+			if ((s->options & SSL_OP_EPHEMERAL_RSA)
+#ifndef OPENSSL_NO_KRB5
+				&& !(alg_k & SSL_kKRB5)
+#endif /* OPENSSL_NO_KRB5 */
+				)
+				/* option SSL_OP_EPHEMERAL_RSA sends temporary RSA key
+				 * even when forbidden by protocol specs
+				 * (handshake may fail as clients are not required to
+				 * be able to handle this) */
+				s->s3->tmp.use_rsa_tmp=1;
+			else
+				s->s3->tmp.use_rsa_tmp=0;
 
 
 			/* only send if a DH key exchange, fortezza or
@@ -466,7 +475,7 @@ int ssl3_accept(SSL *s)
 			 * server certificate contains the server's
 			 * public key for key exchange.
 			 */
-			if (0
+			if (s->s3->tmp.use_rsa_tmp
 			/* PSK: send ServerKeyExchange if either:
 			 *   - PSK identity hint is provided, or
 			 *   - the key exchange is kEECDH.
@@ -670,7 +679,6 @@ int ssl3_accept(SSL *s)
 
 			s->s3->flags |= SSL3_FLAGS_CCS_OK;
 			/* we should decide if we expected this one */
-			s->s3->flags |= SSL3_FLAGS_CCS_OK;
 			ret=ssl3_get_cert_verify(s);
 			if (ret <= 0) goto end;
 
@@ -688,7 +696,6 @@ int ssl3_accept(SSL *s)
 			channel_id = s->s3->tlsext_channel_id_valid;
 #endif
 
-			s->s3->flags |= SSL3_FLAGS_CCS_OK;
 			if (next_proto_neg)
 				s->state=SSL3_ST_SR_NEXT_PROTO_A;
 			else if (channel_id)

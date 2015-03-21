@@ -607,8 +607,9 @@ struct ssl_session_st
 #define SSL_OP_SINGLE_ECDH_USE				0x00080000L
 /* If set, always create a new key when using tmp_dh parameters */
 #define SSL_OP_SINGLE_DH_USE				0x00100000L
-/* Does nothing: retained for compatibiity */
-#define SSL_OP_EPHEMERAL_RSA				0x0
+/* Set to always use the tmp_rsa key when doing RSA operations,
+ * even when this violates protocol specs */
+#define SSL_OP_EPHEMERAL_RSA				0x00200000L
 /* Set on servers to choose the cipher according to the server's
  * preferences */
 #define SSL_OP_CIPHER_SERVER_PREFERENCE			0x00400000L
@@ -679,11 +680,6 @@ struct ssl_session_st
  * rest of the bytes. This effectively randomises the IV and prevents BEAST
  * attacks. */
 #define SSL_MODE_CBC_RECORD_SPLITTING 0x00000100L
-
-/* Send TLS_FALLBACK_SCSV in the ClientHello.
- * To be set by applications that reconnect with a downgraded protocol
- * version; see draft-ietf-tls-downgrade-scsv-00 for details. */
-#define SSL_MODE_SEND_FALLBACK_SCSV 0x00000200L
 
 /* Note: SSL[_CTX]_set_{options,mode} use |= op on the previous value,
  * they cannot be used to clear bits. */
@@ -2751,7 +2747,6 @@ void ERR_load_SSL_strings(void);
 #define SSL_R_WRONG_VERSION_NUMBER			 267
 #define SSL_R_X509_LIB					 268
 #define SSL_R_X509_VERIFICATION_SETUP_PROBLEMS		 269
-#define SSL_R_UNEXPECTED_CCS				 388
 
 #ifdef  __cplusplus
 }
